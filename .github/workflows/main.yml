@@ -2,33 +2,26 @@ name: AMC Ticket Watcher
 
 on:
   schedule:
-    # Every 5 minutes — GitHub's minimum granularity for scheduled workflows.
-    # Note: GitHub may delay scheduled runs by a few minutes during high load
-    # (especially at the top of the hour), so treat this as "roughly every
-    # 5 min," not exact.
-    - cron: "*/5 * * * *"
-  workflow_dispatch: {}  # lets you manually trigger a run from the Actions tab
+    # Run once per hour. The workflow itself performs checks every 5 minutes.
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
 
 jobs:
   check-seats:
     runs-on: ubuntu-latest
-    timeout-minutes: 8  # safety net in case a page hangs
+
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.54.0-noble
+
+    # Allow enough time for 12 polls (1 hour) plus startup overhead.
+    timeout-minutes: 70
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          playwright install --with-deps chromium
-
-      # Persists watcher_state.json (notification cooldown/dedupe) across
-      # runs. Each run writes under a unique key so the save always
-      # succeeds, and restore-keys picks up the most recent prior state.
       - name: Restore watcher state
         uses: actions/cache@v4
         with:
@@ -37,7 +30,18 @@ jobs:
           restore-keys: |
             watcher-state-
 
-      - name: Run watcher
+      - name: Poll AMC every 5 minutes for 1 hour
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: python watcher.py --config config.yaml --once
+        shell: bash
+        run: |
+          for i in {1..12}; do
+            echo "=== Poll $i of 12 ($(date -u)) ==="
+
+            python watcher.py --config config.yaml --once
+
+            # Don't sleep after the final poll.
+            if [ "$i" -lt 12 ]; then
+              sleep 300
+            fi
+          done

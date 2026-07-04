@@ -1,0 +1,43 @@
+name: AMC Ticket Watcher
+
+on:
+  schedule:
+    # Every 5 minutes — GitHub's minimum granularity for scheduled workflows.
+    # Note: GitHub may delay scheduled runs by a few minutes during high load
+    # (especially at the top of the hour), so treat this as "roughly every
+    # 5 min," not exact.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}  # lets you manually trigger a run from the Actions tab
+
+jobs:
+  check-seats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8  # safety net in case a page hangs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      # Persists watcher_state.json (notification cooldown/dedupe) across
+      # runs. Each run writes under a unique key so the save always
+      # succeeds, and restore-keys picks up the most recent prior state.
+      - name: Restore watcher state
+        uses: actions/cache@v4
+        with:
+          path: watcher_state.json
+          key: watcher-state-${{ github.run_id }}
+          restore-keys: |
+            watcher-state-
+
+      - name: Run watcher
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python watcher.py --config config.yaml --once

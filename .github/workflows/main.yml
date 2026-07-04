@@ -2,26 +2,30 @@ name: AMC Ticket Watcher
 
 on:
   schedule:
-    # Run once per hour. The workflow itself performs checks every 5 minutes.
+    # Run once per hour. The workflow itself checks every 5 minutes.
     - cron: "0 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch: {}  # lets you manually trigger a run from the Actions tab
 
 jobs:
   check-seats:
     runs-on: ubuntu-latest
-
-    container:
-      image: mcr.microsoft.com/playwright/python:v1.54.0-noble
-
-    # Allow enough time for 12 polls (1 hour) plus startup overhead.
-    timeout-minutes: 70
+    timeout-minutes: 70  # allows ~1 hour of polling plus setup time
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      # Persists watcher_state.json (notification cooldown/dedupe) across
+      # runs. Each run writes under a unique key so the save always
+      # succeeds, and restore-keys picks up the most recent prior state.
       - name: Restore watcher state
         uses: actions/cache@v4
         with:
@@ -36,12 +40,15 @@ jobs:
         shell: bash
         run: |
           for i in {1..12}; do
-            echo "=== Poll $i of 12 ($(date -u)) ==="
+            echo "========================================"
+            echo "Poll $i of 12 - $(date -u)"
+            echo "========================================"
 
             python watcher.py --config config.yaml --once
 
-            # Don't sleep after the final poll.
+            # Don't sleep after the last poll
             if [ "$i" -lt 12 ]; then
+              echo "Sleeping for 5 minutes..."
               sleep 300
             fi
           done

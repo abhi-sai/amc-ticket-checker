@@ -5,26 +5,28 @@ on:
     # Every 5 minutes — GitHub's minimum granularity for scheduled workflows.
     # Note: GitHub may delay scheduled runs by a few minutes during high load
     # (especially at the top of the hour), so treat this as "roughly every
-    # 5 min," not exact.
+    # 5 min," not exact. IMPORTANT: see the README for why 5 min may not fit
+    # a private repo's free minutes budget — public repos get unlimited.
     - cron: "*/5 * * * *"
   workflow_dispatch: {}  # lets you manually trigger a run from the Actions tab
 
 jobs:
   check-seats:
     runs-on: ubuntu-latest
-    timeout-minutes: 8  # safety net in case a page hangs
+    # Prebuilt image with Chromium + all OS deps already installed — this is
+    # what eliminates the slow "playwright install --with-deps chromium"
+    # step (usually 1-2+ minutes on a fresh runner). The pinned version here
+    # MUST exactly match the "playwright" version in requirements.txt, or
+    # Playwright won't find the browser executable.
+    container:
+      image: mcr.microsoft.com/playwright/python:v1.54.0-noble
+    timeout-minutes: 5  # safety net in case a page hangs
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          playwright install --with-deps chromium
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
 
       # Persists watcher_state.json (notification cooldown/dedupe) across
       # runs. Each run writes under a unique key so the save always

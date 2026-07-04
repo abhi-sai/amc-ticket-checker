@@ -1,0 +1,67 @@
+# -----------------------------------------------------------------------------
+# AMC Ticket Watcher — configuration
+# -----------------------------------------------------------------------------
+
+# How often to re-check all showtimes (seconds). Be reasonable — AMC will
+# rate-limit / block you if you hammer it. 60-120s is plenty for a movie
+# that isn't selling out minute-to-minute.
+poll_interval_seconds: 90
+
+# Minimum number of *adjacent* open seats you want (e.g. 2 = a pair together).
+min_seats_together: 2
+
+# Which row letters count as acceptable. AMC skips the letter "I", so if you
+# say "row G and above" (further back in the theatre), list every letter from
+# G to the back row. Check the actual seat map once to get the letter order
+# right for this specific auditorium.
+allowed_rows:
+  - G
+  - H
+  - J
+  - K
+  - L
+  - M
+
+# Don't re-notify about the exact same available seats more than once every
+# N minutes, so you don't get spammed every 90 seconds while seats sit open.
+notify_cooldown_minutes: 20
+
+# Seat types to ignore entirely (substring match, case-insensitive) — these
+# seats are dropped from consideration, and also treated as a gap so two
+# regular seats on either side of e.g. an open wheelchair space won't be
+# reported as "together." Confirmed seat_type strings from AMC's markup
+# include things like "AMC Club Rocker", "Wheelchair Space", and
+# "Wheelchair Companion AMC Club Rocker".
+exclude_seat_types:
+  - wheelchair
+
+# Discord webhook URL (Server Settings -> Integrations -> Webhooks -> New
+# Webhook -> Copy URL). Leave blank to just print to console.
+# NOTE: if you're deploying this (e.g. GitHub Actions), leave this blank and
+# set a DISCORD_WEBHOOK_URL environment variable / secret instead — the
+# script prefers the env var and falls back to this value. That way you
+# never have to commit the real URL anywhere.
+discord_webhook_url: ""
+
+# One entry per showtime you want watched. `url` must be the direct
+# ticketing/seat-picker link for that specific showtime — open the showtime
+# on amctheatres.com once, get to the seat map, and copy the URL from your
+# browser. `label` is just how it'll show up in notifications/logs.
+showtimes:
+  - label: "July 18th 11 AM"
+    url: "https://www.amctheatres.com/showtimes/143822251/seats"
+
+  - label: "July 18th 3 PM"
+    url: "https://www.amctheatres.com/showtimes/143822252/seats"
+
+  - label: "July 19th 11 AM"
+    url: "https://www.amctheatres.com/showtimes/143822248/seats"
+
+  - label: "July 19th 3 PM"
+    url: "https://www.amctheatres.com/showtimes/143822249/seats"
+  
+  - label: "July 20th 6 PM"
+    url: "https://www.amctheatres.com/showtimes/143822244/seats"
+  
+  - label: "July 21st 6 PM"
+    url: "https://www.amctheatres.com/showtimes/143822243/seats"

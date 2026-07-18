@@ -48,17 +48,23 @@ discord_webhook_url: ""
 # on amctheatres.com once, get to the seat map, and copy the URL from your
 # browser. `label` is just how it'll show up in notifications/logs.
 showtimes:
-  - label: "July 18th 11 AM"
-    url: "https://www.amctheatres.com/showtimes/143822251/seats"
-
-  - label: "July 18th 3 PM"
-    url: "https://www.amctheatres.com/showtimes/143822252/seats"
+  - label: "July 18th 11 PM"
+    url: "https://www.amctheatres.com/showtimes/143822250/seats"
 
   - label: "July 19th 11 AM"
     url: "https://www.amctheatres.com/showtimes/143822248/seats"
 
-  - label: "July 19th 3 PM"
-    url: "https://www.amctheatres.com/showtimes/143822249/seats"
+  - label: "July 19th 10 AM EMPIRE"
+    url: "https://www.amctheatres.com/showtimes/143803167/seats"
+
+  - label: "July 19th 10 AM 34th Street"
+    url: "https://www.amctheatres.com/showtimes/143804989/seats"
+  
+  - label: "July 19th 6 PM EMPIRE"
+    url: "https://www.amctheatres.com/showtimes/143803169/seats"
+  
+  - label: "July 19th 6 PM 34th Street"
+    url: "https://www.amctheatres.com/showtimes/143804991/seats"
   
   - label: "July 20th 6 PM"
     url: "https://www.amctheatres.com/showtimes/143822244/seats"

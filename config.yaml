@@ -71,3 +71,21 @@ showtimes:
   
   - label: "July 21st 6 PM"
     url: "https://www.amctheatres.com/showtimes/143822243/seats"
+  
+  - label: "July 22nd 2 PM"
+    url: "https://www.amctheatres.com/showtimes/143822238/seats"
+  
+  - label: "July 22nd 6 PM"
+    url: "https://www.amctheatres.com/showtimes/143822239/seats"
+
+  - label: "July 22nd 2 PM EMPIRE"
+    url: "https://www.amctheatres.com/showtimes/143803180/seats"
+  
+  - label: "July 22nd 6 PM EMPIRE"
+    url: "https://www.amctheatres.com/showtimes/143803181/seats"
+  
+  - label: "July 22nd 2 PM 34th"
+    url: "https://www.amctheatres.com/showtimes/143805002/seats"
+  
+  - label: "July 22nd 6 PM 34th"
+    url: "https://www.amctheatres.com/showtimes/143805003/seats"

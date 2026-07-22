@@ -49,12 +49,6 @@ discord_webhook_url: ""
 # browser. `label` is just how it'll show up in notifications/logs.
 showtimes:
   
-  - label: "July 20th 6 PM"
-    url: "https://www.amctheatres.com/showtimes/143822244/seats"
-  
-  - label: "July 21st 6 PM"
-    url: "https://www.amctheatres.com/showtimes/143822243/seats"
-  
   - label: "July 22nd 2 PM"
     url: "https://www.amctheatres.com/showtimes/143822238/seats"
   
